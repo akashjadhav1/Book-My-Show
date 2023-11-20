@@ -1,13 +1,46 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { ApiData } from "../App";
-import { NavLink } from "react-router-dom";
 
 function BookingData() {
   const data = useContext(ApiData);
+  const [editingId, setEditingId] = useState(null);
+  const [editedSeats, setEditedSeats] = useState({}); // State for edited seats
+  const [alert, setAlert] = useState(null);
+
+  const handleEdit = (id, seats) => {
+    setEditingId(id);
+    setEditedSeats(seats);
+  };
+
+  const handleSave = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/bookings/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ seats: editedSeats }), // Send edited seats
+      });
+
+      if (response.ok) {
+        
+        setAlert({ type: "success", message: "Booking updated successfully" });
+        console.log("Updated successfully");
+        setEditingId(null); // Reset the editing state
+        // Show a success notification using react-toastify
+      } else {
+        setAlert({ type: "danger", message: "Error updating booking" });
+        console.error("Error updating:", response.status);
+      }
+    } catch (error) {
+      setAlert({ type: "danger", message: "Error updating booking" });
+      console.error("Error updating:", error);
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`/bookings/${id}`, {
+      const response = await fetch(`http://localhost:8080/bookings/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -15,74 +48,125 @@ function BookingData() {
       });
 
       if (response.ok) {
-        // Update your data context or fetch the updated data
-        // For example, refetch the data from the server or update the context state
-        console.log("Booking deleted successfully");
+       
+        console.log("Deleted successfully");
+
+        
+
+        setAlert({ type: "success", message: "Booking deleted successfully" });
       } else {
-        console.error("Error deleting booking:", response.statusText);
+        setAlert({ type: "danger", message: "Error deleting booking" });
+        console.error("Error deleting:", response.status);
       }
     } catch (error) {
-      console.error("Error deleting booking:", error.message);
+      console.error("Error deleting:", error);
+      setAlert({ type: "danger", message: "Error deleting booking" });
+    }
+  };
+
+  const handleEditBooking = (id) => {
+    const isConfirm = window.confirm(
+      "Are you sure you want to Edit this booking?"
+    );
+    if (isConfirm) {
+      handleSave(id);
+    }
+  };
+
+  const handleDeleteBooking = (id) => {
+    const isConfirm = window.confirm("Are you sure you want to delete?");
+    if (isConfirm) {
+      handleDelete(id);
     }
   };
 
   return (
-    <div className="container-fluid">
-      <div className="table-responsive overflow-x-auto">
-        <table className="table table-dark">
-          <thead>
-            <tr>
-              <th scope="col">MovieName</th>
-              <th scope="col">MovieTime</th>
-              <th scope="col">Seat(A1)</th>
-              <th scope="col">Seat(A2)</th>
-              <th scope="col">Seat(B1)</th>
-              <th scope="col">Seat(B2)</th>
-              <th scope="col">Seat(C1)</th>
-              <th scope="col">Seat(C2)</th>
-              <th scope="col">Edit</th>
-              <th scope="col">Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((items) => (
-              <tr key={items._id}>
-                <th scope="row">{items.MovieName}</th>
-                <td>{items.MovieTime}</td>
-                <td>{items.seats.a1}</td>
-                <td>{items.seats.a2}</td>
-                <td>{items.seats.b1}</td>
-                <td>{items.seats.b2}</td>
-                <td>{items.seats.c1}</td>
-                <td>{items.seats.c2}</td>
-                <td>
-
-                <NavLink to={`/edit/${items._id}`}>
-                <button type="button" className="btn btn-primary">
-                  Edit
-                </button>
-                </NavLink>
-
-                </td>
-                <td>
+    <>
+     
+      <div className="container-fluid pt-5 mt-4">
+        <div className="table-responsive overflow-x-auto">
+        {alert && (
+        <div className={`alert alert-${alert.type} mt-3`} role="alert">
+          {alert.message}
+        </div>
+      )}
+          <table className="table table-dark">
+            <thead>
+              <tr>
+                <th scope="col">MovieName</th>
+                <th scope="col">MovieTime</th>
+                <th scope="col">Seat(A1)</th>
+                <th scope="col">Seat(A2)</th>
+                <th scope="col">Seat(B1)</th>
+                <th scope="col">Seat(B2)</th>
+                <th scope="col">Seat(C1)</th>
+                <th scope="col">Seat(C2)</th>
+                <th scope="col">Edit</th>
+                <th scope="col">Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((items) => (
+                <tr key={items._id}>
+                  <th scope="row">{items.MovieName}</th>
+                  <td>{items.MovieTime}</td>
+                  {["a1", "a2", "b1", "b2", "c1", "c2"].map((seatKey) => (
+                    <td key={seatKey}>
+                      {editingId === items._id ? (
+                        // Render input fields in edit mode
+                        <input
+                          type="number"
+                          value={editedSeats[seatKey]}
+                          onChange={(e) =>
+                            setEditedSeats({
+                              ...editedSeats,
+                              [seatKey]: e.target.value,
+                            })
+                          }
+                          min="0"
+                          max="5"
+                        />
+                      ) : (
+                        // Render the seat data
+                        items.seats[seatKey]
+                      )}
+                    </td>
+                  ))}
                   <td>
-                    <NavLink to={`${items._id}`}>
+                    {editingId === items._id ? (
+                      <button
+                        className="btn btn-success"
+                        onClick={() => handleEditBooking(items._id)}
+                      >
+                        Save
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => handleEdit(items._id, items.seats)}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </td>
+                  <td>
+                    {/* <NavLink to={`/bookings/${items._id}`}> */}
                     <button
-                      type="button"
                       className="btn btn-danger"
-                      onClick={() => handleDelete(items._id)}
+                      onClick={() => handleDeleteBooking(items._id)}
                     >
                       Delete
                     </button>
-                    </NavLink>
+                    {/* </NavLink> */}
                   </td>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>{" "}
+    </>
   );
 }
 

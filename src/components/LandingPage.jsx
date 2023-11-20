@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function LandingPage() {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -11,6 +11,7 @@ function LandingPage() {
     c1: 0,
     c2: 0,
   });
+  const [alert, setAlert] = useState(null);
 
   const handleMovieClick = (movie) => {
     setSelectedMovie(movie);
@@ -27,7 +28,9 @@ function LandingPage() {
       [seat]: value,
     }));
   };
+useEffect(()=>{
 
+},[])
   const handleFormSubmit = async () => {
     // Prepare the data to be sent to the server
     const postData = {
@@ -38,7 +41,7 @@ function LandingPage() {
 
     // Make an HTTP POST request to your server
     try {
-      const response = await fetch("http://localhost:3000/bookings", {
+      const response = await fetch("http://localhost:8080/bookings", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,14 +50,16 @@ function LandingPage() {
       });
 
       if (response.ok) {
-        console.log("Booking saved successfully");
+        
+        setAlert({ type: "success", message: "Booking saved successfully" });
         // Optionally reset the form or perform other actions upon successful booking
       } else {
-        console.error("Error saving booking");
+        setAlert({ type: "error", message: "Error saving booking" });
         // Handle the error (e.g., show a message to the user)
       }
     } catch (error) {
       console.error("Error:", error);
+      setAlert({ type: "error", message: "Error saving booking" });
       // Handle the error (e.g., show a message to the user)
     }
   };
@@ -75,13 +80,11 @@ function LandingPage() {
   const handleBookNow = () => {
     // Display a confirmation dialog
     if (!selectedMovie || !selectedTime) {
-      window.alert("Please select a Movie and Time before booking.");
+      setAlert({
+        type: "warning",
+        message: "Please select a Movie and Time before booking.",
+      });
       return;
-        
-      
-
-
-
     }
     const isConfirmed = window.confirm(
       "Are you sure you want to book this movie?"
@@ -90,82 +93,163 @@ function LandingPage() {
     // If user confirms, proceed with form submission
     if (isConfirmed) {
       handleFormSubmit();
+
       resetForm();
     }
   };
 
   return (
     <div className="container">
-      <h3 className="text-center text-white mt-5">Book Your Show</h3>
+      
+      <h3 className="text-center text-white mt-5 pt-5">Book Your Show</h3>
 
       <form>
-        <div class="row">
-          <div class="col-sm-6 col-md-4">
-            <div class="card bg-warning">
-              <div class="card-body text-center">
-                <h5 class="card-title text-center">Select A Movie</h5>
+        <div className="row">
+          <div className="col-sm-6 col-md-4">
+            <div className="card bg-warning">
+              <div className="card-body text-center">
+                <h5 className="card-title text-center">Select A Movie</h5>
                 <hr />
 
-                <p
-                  className={`card-text rounded shadow ${
-                    selectedMovie === "Jawan" ? "selected bg-success" : ""
-                  }`}
-                  onClick={() => handleMovieClick("Jawan")}
-                >
-                  Jawan
-                </p>
+                <div className="d-flex">
+                  <div className="">
+                    <img
+                      src="images/Jawan.jpeg"
+                      alt="JawanImg"
+                      className="rounded-circle"
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </div>
 
-                <p
-                  className={`card-text rounded shadow ${
-                    selectedMovie === "Leo" ? "selected bg-success" : ""
-                  }`}
-                  onClick={() => handleMovieClick("Leo")}
-                >
-                  Leo
-                </p>
-                <p
-                  className={`card-text rounded shadow ${
-                    selectedMovie === "OMG2" ? "selected bg-success" : ""
-                  }`}
-                  onClick={() => handleMovieClick("OMG2")}
-                >
-                  OMG 2
-                </p>
+                  <div className="w-100 pt-3 px-1">
+                    <p
+                      className={`card-text rounded shadow ${
+                        selectedMovie === "Jawan" ? "selected bg-success" : ""
+                      }`}
+                      onClick={() => handleMovieClick("Jawan")}
+                    >
+                      Jawan
+                    </p>
+                  </div>
+                </div>
 
-                <p
-                  className={`card-text rounded shadow ${
-                    selectedMovie === "Skanda" ? "selected bg-success" : ""
-                  }`}
-                  onClick={() => handleMovieClick("Skanda")}
-                >
-                  Skanda
-                </p>
+                <div className="d-flex mt-1">
+                  <div>
+                    <img
+                      src="images/Leo.jpeg"
+                      alt="LeoImg"
+                      className="rounded-circle"
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </div>
 
-                <p
-                  className={`card-text rounded shadow ${
-                    selectedMovie === "Fukrey3" ? "selected bg-success" : ""
-                  }`}
-                  onClick={() => handleMovieClick("Fukrey3")}
-                >
-                  Fukrey 3
-                </p>
+                  <div className="w-100 pt-3 px-1">
+                    <p
+                      className={`card-text rounded shadow ${
+                        selectedMovie === "Leo" ? "selected bg-success" : ""
+                      }`}
+                      onClick={() => handleMovieClick("Leo")}
+                    >
+                      Leo
+                    </p>
+                  </div>
+                </div>
 
-                <p
-                  className={`card-text rounded shadow ${
-                    selectedMovie === "Jailer" ? "selected bg-success" : ""
-                  }`}
-                  onClick={() => handleMovieClick("Jailer")}
-                >
-                  Jailer
-                </p>
+                <div className="d-flex mt-1">
+                  <div>
+                    <img
+                      src="images/Gadar2.jpeg"
+                      alt="Gadar2Img"
+                      className="rounded-circle"
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </div>
+
+                  <div className="w-100 pt-3 px-1">
+                    <p
+                      className={`card-text rounded shadow ${
+                        selectedMovie === "Gadar2" ? "selected bg-success" : ""
+                      }`}
+                      onClick={() => handleMovieClick("Gadar2")}
+                    >
+                      Gadar 2
+                    </p>
+                  </div>
+                </div>
+
+                <div className="d-flex mt-1">
+                  <div>
+                    <img
+                      src="images/Skanda.jpeg"
+                      alt="SkandaImg"
+                      className="rounded-circle"
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </div>
+
+                  <div className="w-100 pt-3 px-1">
+                    <p
+                      className={`card-text rounded shadow ${
+                        selectedMovie === "Skanda" ? "selected bg-success" : ""
+                      }`}
+                      onClick={() => handleMovieClick("Skanda")}
+                    >
+                      Skanda
+                    </p>
+                  </div>
+                </div>
+
+                <div className="d-flex mt-1">
+                  <div>
+                    <img
+                      src="images/Pathaan.jpeg"
+                      alt="PathaanImg"
+                      className="rounded-circle"
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </div>
+
+                  <div className="w-100 pt-3 px-1">
+                    <p
+                      className={`card-text rounded shadow ${
+                        selectedMovie === "Pathaan" ? "selected bg-success" : ""
+                      }`}
+                      onClick={() => handleMovieClick("Pathaan")}
+                    >
+                      Pathaan
+                    </p>
+                  </div>
+                </div>
+
+                <div className="d-flex mt-1">
+                  <div>
+                    <img
+                      src="images/jailer.jpeg"
+                      alt="JailerImg"
+                      className="rounded-circle"
+                      style={{ width: 50, height: 50 }}
+                    />
+                  </div>
+
+                  <div className="w-100 pt-3 px-1">
+                    <p
+                      className={`card-text rounded shadow ${
+                        selectedMovie === "Jailer" ? "selected bg-success" : ""
+                      }`}
+                      onClick={() => handleMovieClick("Jailer")}
+                    >
+                      Jailer
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="col-sm-6 col-md-4">
-            <div class="card text-center bg-warning">
-              <div class="card-body">
-                <h5 class="card-title">Select A Slot</h5>
+          <div className="col-sm-6 col-md-4">
+            <div className="card text-center bg-warning">
+              <div className="card-body">
+                <h5 className="card-title">Select A Slot</h5>
                 <hr />
                 <p
                   className={`card-text rounded shadow ${
@@ -220,13 +304,13 @@ function LandingPage() {
             </div>
           </div>
 
-          <div class="col-sm-6 col-md-4">
-            <div class="card text-center bg-warning">
-              <div class="card-body">
-                <h5 class="card-title">Select Seats</h5>
+          <div className="col-sm-6 col-md-4">
+            <div className="card text-center bg-warning">
+              <div className="card-body">
+                <h5 className="card-title">Select Seats</h5>
                 <hr />
                 {["a1", "a2", "b1", "b2", "c1", "c2"].map((seat) => (
-                  <p key={seat} class="fw-bold">
+                  <p key={seat} className="fw-bold">
                     {seat.toUpperCase()} :{" "}
                     <input
                       className="w-25"
@@ -246,7 +330,13 @@ function LandingPage() {
         </div>
       </form>
 
-      <div className="text-center pb-5">
+
+      {alert && (
+        <div className={`alert alert-${alert.type} mt-3`} role="alert">
+          {alert.message}
+        </div>
+      )}
+      <div className="text-center pb-5 pt-3">
         <button
           type="button"
           className="btn btn-primary"
