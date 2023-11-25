@@ -1,11 +1,43 @@
 import React, { useContext, useState } from "react";
 import { ApiData } from "../App";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 
 function BookingData() {
   const data = useContext(ApiData);
   const [editingId, setEditingId] = useState(null);
   const [editedSeats, setEditedSeats] = useState({}); // State for edited seats
-  const [alert, setAlert] = useState(null);
+  
+
+  const success = (msg) => {
+    toast.success(msg, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
+
+  const errorMsg = (msg) => {
+    toast.error(msg, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
+
+  
 
   const handleEdit = (id, seats) => {
     setEditingId(id);
@@ -14,53 +46,62 @@ function BookingData() {
 
   const handleSave = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/bookings/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ seats: editedSeats }), // Send edited seats
-      });
+      const response = await fetch(
+        `https://bookmyshow-higp.onrender.com/bookings/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ seats: editedSeats }), // Send edited seats
+        }
+      );
 
       if (response.ok) {
         
-        setAlert({ type: "success", message: "Booking updated successfully" });
         console.log("Updated successfully");
         setEditingId(null); // Reset the editing state
+        success("Booking updated successfully");
         // Show a success notification using react-toastify
+        
+        
       } else {
-        setAlert({ type: "danger", message: "Error updating booking" });
+        errorMsg("Error updating booking")
         console.error("Error updating:", response.status);
       }
     } catch (error) {
-      setAlert({ type: "danger", message: "Error updating booking" });
+      errorMsg("Error updating booking")
       console.error("Error updating:", error);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/bookings/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
+      const response = await fetch(
+        `https://bookmyshow-higp.onrender.com/bookings/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.ok) {
-       
-        console.log("Deleted successfully");
-
         
-
-        setAlert({ type: "success", message: "Booking deleted successfully" });
+        console.log("Deleted successfully");
+        
+        
+        success("Booking deleted successfully");
+        
+   
+        
       } else {
-        setAlert({ type: "danger", message: "Error deleting booking" });
+       errorMsg("Error deleting booking")
         console.error("Error deleting:", response.status);
       }
     } catch (error) {
       console.error("Error deleting:", error);
-      setAlert({ type: "danger", message: "Error deleting booking" });
+      errorMsg("Error deleting booking")
     }
   };
 
@@ -82,14 +123,9 @@ function BookingData() {
 
   return (
     <>
-     
       <div className="container-fluid pt-5 mt-4">
         <div className="table-responsive overflow-x-auto">
-        {alert && (
-        <div className={`alert alert-${alert.type} mt-3`} role="alert">
-          {alert.message}
-        </div>
-      )}
+          
           <table className="table table-dark">
             <thead>
               <tr>
@@ -162,9 +198,23 @@ function BookingData() {
                   </td>
                 </tr>
               ))}
+
+              
             </tbody>
           </table>
         </div>
+        <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+              />
       </div>{" "}
     </>
   );

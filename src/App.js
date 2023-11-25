@@ -13,13 +13,16 @@ export function App() {
 
   const getStoreData = async () => {
     try {
-      const res = await fetch("http://localhost:8080/bookings");
+      const res = await fetch("https://bookmyshow-higp.onrender.com/bookings");
       const actualData = await res.json();
       setData(actualData);
     } catch (error) {
       // Handle errors here
     }
   };
+
+  
+  
 
   useEffect(() => {
     getStoreData();
@@ -37,5 +40,9 @@ export function App() {
     </div>
   );
 }
+
+
+
+
 
 

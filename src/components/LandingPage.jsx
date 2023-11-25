@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 
+import {} from "../App";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function LandingPage() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -11,7 +15,45 @@ function LandingPage() {
     c1: 0,
     c2: 0,
   });
-  const [alert, setAlert] = useState(null);
+
+  const success = () => {
+    toast.success("Booking saved successfully", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
+
+  const error = () => {
+    toast.error("Error saving booking", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
+
+  const warning = () => {
+    toast.warn("Please select a Movie and Time before booking.", {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+  };
 
   const handleMovieClick = (movie) => {
     setSelectedMovie(movie);
@@ -28,9 +70,8 @@ function LandingPage() {
       [seat]: value,
     }));
   };
-useEffect(()=>{
 
-},[])
+  useEffect(() => {}, []);
   const handleFormSubmit = async () => {
     // Prepare the data to be sent to the server
     const postData = {
@@ -41,25 +82,27 @@ useEffect(()=>{
 
     // Make an HTTP POST request to your server
     try {
-      const response = await fetch("http://localhost:8080/bookings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      });
+      const response = await fetch(
+        "https://bookmyshow-higp.onrender.com/bookings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(postData),
+        }
+      );
 
       if (response.ok) {
-        
-        setAlert({ type: "success", message: "Booking saved successfully" });
-        // Optionally reset the form or perform other actions upon successful booking
+        success();
+        // setAlert({ type: "success", message: "Booking saved successfully" });
       } else {
-        setAlert({ type: "error", message: "Error saving booking" });
+        error();
         // Handle the error (e.g., show a message to the user)
       }
     } catch (error) {
       console.error("Error:", error);
-      setAlert({ type: "error", message: "Error saving booking" });
+      error();
       // Handle the error (e.g., show a message to the user)
     }
   };
@@ -80,10 +123,7 @@ useEffect(()=>{
   const handleBookNow = () => {
     // Display a confirmation dialog
     if (!selectedMovie || !selectedTime) {
-      setAlert({
-        type: "warning",
-        message: "Please select a Movie and Time before booking.",
-      });
+      warning()
       return;
     }
     const isConfirmed = window.confirm(
@@ -100,8 +140,7 @@ useEffect(()=>{
 
   return (
     <div className="container">
-      
-      <h3 className="text-center text-white mt-5 pt-5">Book Your Show</h3>
+      <h3 className="text-center text-white mt-5 pt-5">Book My Show</h3>
 
       <form>
         <div className="row">
@@ -330,12 +369,6 @@ useEffect(()=>{
         </div>
       </form>
 
-
-      {alert && (
-        <div className={`alert alert-${alert.type} mt-3`} role="alert">
-          {alert.message}
-        </div>
-      )}
       <div className="text-center pb-5 pt-3">
         <button
           type="button"
@@ -344,6 +377,19 @@ useEffect(()=>{
         >
           Book Now
         </button>
+
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </div>
     </div>
   );
