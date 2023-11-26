@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 
-function BookingData() {
+function BookingData({getStoreData}) {
   const data = useContext(ApiData);
   const [editingId, setEditingId] = useState(null);
   const [editedSeats, setEditedSeats] = useState({}); // State for edited seats
@@ -58,8 +58,10 @@ function BookingData() {
       );
 
       if (response.ok) {
-        
+        getStoreData();  // refresh the api data after edit 
+
         console.log("Updated successfully");
+
         setEditingId(null); // Reset the editing state
         success("Booking updated successfully");
         // Show a success notification using react-toastify
@@ -93,7 +95,7 @@ function BookingData() {
         
         success("Booking deleted successfully");
         
-   
+        getStoreData()
         
       } else {
        errorMsg("Error deleting booking")

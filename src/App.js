@@ -8,7 +8,7 @@ import BookingData from './components/BookingData';
 
 export const ApiData = createContext([]);
 
-export function App() {
+export const App=()=> {
   const [data, setData] = useState([]);
 
   const getStoreData = async () => {
@@ -33,13 +33,14 @@ export function App() {
       <ApiData.Provider value={data}>
         <Navbar />
         <Routes>
-          <Route exact path="/" element={<LandingPage />} />
-          <Route path="/bookings" element={<BookingData />} />
+          <Route exact path="/" element={<LandingPage getStoreData={getStoreData}/>} />
+          <Route path="/bookings" element={<BookingData getStoreData={getStoreData}/>} />
         </Routes>
       </ApiData.Provider>
     </div>
   );
 }
+
 
 
 

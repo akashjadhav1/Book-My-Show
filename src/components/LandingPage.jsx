@@ -4,7 +4,7 @@ import {} from "../App";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function LandingPage() {
+function LandingPage({getStoreData}) {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [formData, setFormData] = useState({
@@ -96,14 +96,19 @@ function LandingPage() {
       if (response.ok) {
         success();
         // setAlert({ type: "success", message: "Booking saved successfully" });
+
+        getStoreData(); // refresh api data after post 
+
       } else {
         error();
         // Handle the error (e.g., show a message to the user)
+
+        
       }
     } catch (error) {
       console.error("Error:", error);
       error();
-      // Handle the error (e.g., show a message to the user)
+      // Handle the error (show a message to the user)
     }
   };
 
